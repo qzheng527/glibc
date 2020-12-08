@@ -174,6 +174,12 @@ _dl_sysdep_start (void **start_argptr,
 	GLRO(dl_sysinfo_dso) = (void *) av->a_un.a_val;
 	break;
 #endif
+      /* Occlum note: Init the __occlum_entry from the aux vector,
+         Occlum has set the value of aux vector entry to the address
+         of Occlum's syscall handler. */
+      case AT_OCCLUM_ENTRY:
+	__occlum_entry = (void *)av->a_un.a_val;
+	break;
       case AT_RANDOM:
 	_dl_random = (void *) av->a_un.a_val;
 	break;

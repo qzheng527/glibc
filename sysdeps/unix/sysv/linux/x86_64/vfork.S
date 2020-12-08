@@ -35,7 +35,7 @@ ENTRY (__vfork)
 
 	/* Stuff the syscall number in RAX and enter into the kernel.  */
 	movl	$SYS_ify (vfork), %eax
-	syscall
+	OCCLUM_SYSCALL
 
 	/* Push back the return PC.  */
 	pushq	%rdi

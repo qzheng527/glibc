@@ -26,7 +26,8 @@ __access (const char *file, int type)
 #ifdef __NR_access
   return INLINE_SYSCALL_CALL (access, file, type);
 #else
-  return INLINE_SYSCALL_CALL (faccessat, AT_FDCWD, file, type);
+  /* Occlum note: Occlum accepts the 4th argument */
+  return INLINE_SYSCALL_CALL (faccessat, AT_FDCWD, file, type, 0);
 #endif
 }
 libc_hidden_def (__access)

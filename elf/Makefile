@@ -82,8 +82,10 @@ dl-routines = \
   dl-trampoline \
   dl-version \
   dl-write \
+  occlum_entry \
   # dl-routines
 
+CFLAGS-occlum_entry.c = -fPIC
 ifeq (yes,$(use-ldconfig))
 dl-routines += dl-cache
 endif

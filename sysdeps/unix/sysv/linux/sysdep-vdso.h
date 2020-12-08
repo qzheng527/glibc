@@ -33,7 +33,7 @@
     long int sc_ret;							      \
 									      \
     __typeof (GLRO(dl_vdso_##name)) vdsop = GLRO(dl_vdso_##name);	      \
-    if (vdsop != NULL)							      \
+    if (vdsop != NULL && !IS_RUNNING_ON_OCCLUM)							      \
       {									      \
 	sc_ret = INTERNAL_VSYSCALL_CALL (vdsop, nr, ##args);	      	      \
 	if (!INTERNAL_SYSCALL_ERROR_P (sc_ret))			      	      \

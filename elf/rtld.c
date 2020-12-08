@@ -1653,7 +1653,9 @@ dl_main (const ElfW(Phdr) *phdr,
   setup_vdso_pointers ();
 
 #ifdef DL_SYSDEP_OSCHECK
-  DL_SYSDEP_OSCHECK (_dl_fatal_printf);
+  /* Occlum note: Disable the OS check in Occlum */
+  if (!IS_RUNNING_ON_OCCLUM)
+    DL_SYSDEP_OSCHECK (_dl_fatal_printf);
 #endif
 
   /* Initialize the data structures for the search paths for shared

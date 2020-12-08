@@ -18,6 +18,11 @@
    <https://www.gnu.org/licenses/>.  */
 
 #ifndef _HP_TIMING_H
+
+#include <sysdeps/generic/hp-timing.h>
+/* Occlum note: Disable the HP_TIMING because rdtsc is an exception in SGXv1,
+   it is too slow to handle it, maybe we can enable it in SGXv2 */
+#if 0
 #define _HP_TIMING_H	1
 
 #define HP_TIMING_INLINE	(1)
@@ -30,5 +35,5 @@ typedef unsigned long long int hp_timing_t;
 			    : "=r" (Var))
 
 #include <hp-timing-common.h>
-
-#endif	/* hp-timing.h */
+#endif
+#endif /* hp-timing.h */

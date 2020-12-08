@@ -214,7 +214,9 @@ LIBC_START_MAIN (int (*main) (int, char **, char ** MAIN_AUXVEC_DECL),
     {
       /* This needs to run to initiliaze _dl_osversion before TLS
 	 setup might check it.  */
-      DL_SYSDEP_OSCHECK (__libc_fatal);
+      /* Occlum note: Disable the OS check in Occlum */
+      if (!IS_RUNNING_ON_OCCLUM)
+        DL_SYSDEP_OSCHECK (__libc_fatal);
     }
 # endif
 

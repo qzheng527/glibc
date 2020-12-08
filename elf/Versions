@@ -79,4 +79,8 @@ ld {
     # Set value of a tunable.
     __tunable_get_val;
   }
+  OCCLUM {
+    # Occlum syscall address
+    __occlum_entry;
+  }
 }

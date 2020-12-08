@@ -47,6 +47,11 @@ fresetlockfiles (void)
 pid_t
 __libc_fork (void)
 {
+  if (IS_RUNNING_ON_OCCLUM) {
+    /* Occlum note: Occlum does NOT support fork, use posix_spawn instead. */
+    errno = ENOSYS;
+    return -1;
+  }
   pid_t pid;
 
   /* Determine if we are running multiple threads.  We skip some fork

@@ -33,8 +33,10 @@ faccessat (int fd, const char *file, int mode, int flag)
   if (flag & ~(AT_SYMLINK_NOFOLLOW | AT_EACCESS))
     return INLINE_SYSCALL_ERROR_RETURN_VALUE (EINVAL);
 
-  if ((flag == 0 || ((flag & ~AT_EACCESS) == 0 && ! __libc_enable_secure)))
-    return INLINE_SYSCALL (faccessat, 3, fd, file, mode);
+  if ((flag == 0 || ((flag & ~AT_EACCESS) == 0 && ! __libc_enable_secure))) {
+    /* Occlum note: Occlum accepts the 4th argument */
+    return INLINE_SYSCALL (faccessat, 4, fd, file, mode, flag);
+  }
 
   struct stat64 stats;
   if (__fxstatat64 (_STAT_VER, fd, file, &stats, flag & AT_SYMLINK_NOFOLLOW))

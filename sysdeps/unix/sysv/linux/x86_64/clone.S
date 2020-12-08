@@ -47,6 +47,29 @@
 
 
         .text
+	.global __thread_start_on_occlum
+	.hidden __thread_start_on_occlum
+	.type   __thread_start_on_occlum,@function
+__thread_start_on_occlum:
+	// 16(%rsp) - void* args
+	mov 16(%rsp), %rdi
+	// 8(%rsp)  - int(*func)(void*)
+	mov 8(%rsp), %rcx
+	// Make %rsp 16-aligned before call
+	and $-16, %rsp
+	// Call user-given thread function
+	call *%rcx
+
+	// Call exit syscall
+	//  int syscall_num - %rdi
+	//  int exit_code - %rsi
+	mov $SYS_ify(exit), %rdi
+	mov %rax, %rsi
+	call syscall@GOTPCREL(%rip)
+
+	// This should never happen!
+	hlt
+
 ENTRY (__clone)
 	/* Sanity check arguments.  */
 	movq	$-EINVAL,%rax
@@ -55,6 +78,42 @@ ENTRY (__clone)
 	testq	%rsi,%rsi		/* no NULL stack pointers */
 	jz	SYSCALL_ERROR_LABEL
 
+	// Is running on Occlum?
+	movq __occlum_entry@GOTPCREL(%rip), %r11
+	movq (%r11), %r11
+	cmpq $0, %r11
+	je __clone_on_x84_64
+	//
+	// Pass args to the stack of the child
+	//
+	// Save child stack addr into another scratch register
+	mov %rsi, %r10
+	// Make child stack addr 16-byte aligned initially
+	and $-16, %r10
+	// Push args into the stack of the child
+	sub $8, %r10
+	mov %rcx, (%r10)
+	// Push func into the stack of the child
+	sub $8, %r10
+	mov %rdi, (%r10)
+	// Push "return address" for syscall
+	// LibOS will find the entry point of the child by popping
+	// the value from the top of the stack of the new thread.
+	sub $8, %r10
+	mov __thread_start_on_occlum@GOTPCREL(%rip), %r11
+	mov %r11, (%r10)
+
+	/* Do the system call.  */
+	mov $SYS_ify(clone), %rdi
+	mov %rdx, %rsi
+	mov %r10, %rdx
+	mov %r8, %rcx
+	mov 8(%rsp), %r8
+	call syscall@GOTPCREL(%rip)
+
+	jmp __end
+
+__clone_on_x84_64:
 	/* Insert the argument onto the new stack.  */
 	subq	$16,%rsi
 	movq	%rcx,8(%rsi)
@@ -79,6 +138,7 @@ ENTRY (__clone)
 	jl	SYSCALL_ERROR_LABEL
 	jz	L(thread_start)
 
+__end:
 	ret
 
 L(thread_start):

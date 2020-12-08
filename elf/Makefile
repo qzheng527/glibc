@@ -29,11 +29,15 @@ routines	= $(all-dl-routines) dl-support dl-iteratephdr \
 
 # The core dynamic linking functions are in libc for the static and
 # profiled libraries.
+# Occlum note: Define the global symbol `__occlum_entry` in ld.so
 dl-routines	= $(addprefix dl-,load lookup object reloc deps hwcaps \
 				  runtime init fini debug misc \
 				  version profile tls origin scope \
 				  execstack open close trampoline \
-				  exception sort-maps)
+				  exception sort-maps) occlum_entry
+
+CFLAGS-occlum_entry.c = -fPIC
+
 ifeq (yes,$(use-ldconfig))
 dl-routines += dl-cache
 endif

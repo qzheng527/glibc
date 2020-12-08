@@ -22,6 +22,7 @@
 #include <sysdeps/unix/sysv/linux/sysdep.h>
 #include <sysdeps/unix/x86_64/sysdep.h>
 #include <tls.h>
+#include "occlum_syscall.h"
 
 /* Defines RTLD_PRIVATE_ERRNO.  */
 #include <dl-sysdep.h>
@@ -39,6 +40,10 @@
 # define __NR_semtimedop 220
 #endif
 
+/* Occlum note: A specific syscall number to handle posix_spawn in Occlum */
+#ifndef __NR_spawn
+# define __NR_spawn 359
+#endif
 
 #ifdef __ASSEMBLER__
 
@@ -166,7 +171,7 @@
 # define DO_CALL(syscall_name, args)		\
     DOARGS_##args				\
     movl $SYS_ify (syscall_name), %eax;		\
-    syscall;
+    OCCLUM_SYSCALL;
 
 # define DOARGS_0 /* nothing */
 # define DOARGS_1 /* nothing */
@@ -230,7 +235,7 @@
 ({									\
     unsigned long int resultvar;					\
     asm volatile (							\
-    "syscall\n\t"							\
+    "OCCLUM_SYSCALL\n\t"						\
     : "=a" (resultvar)							\
     : "0" (number)							\
     : "memory", REGISTERS_CLOBBERED_BY_SYSCALL);			\
@@ -244,7 +249,7 @@
     TYPEFY (arg1, __arg1) = ARGIFY (arg1);			 	\
     register TYPEFY (arg1, _a1) asm ("rdi") = __arg1;			\
     asm volatile (							\
-    "syscall\n\t"							\
+    "OCCLUM_SYSCALL\n\t"						\
     : "=a" (resultvar)							\
     : "0" (number), "r" (_a1)						\
     : "memory", REGISTERS_CLOBBERED_BY_SYSCALL);			\
@@ -260,7 +265,7 @@
     register TYPEFY (arg2, _a2) asm ("rsi") = __arg2;			\
     register TYPEFY (arg1, _a1) asm ("rdi") = __arg1;			\
     asm volatile (							\
-    "syscall\n\t"							\
+    "OCCLUM_SYSCALL\n\t"						\
     : "=a" (resultvar)							\
     : "0" (number), "r" (_a1), "r" (_a2)				\
     : "memory", REGISTERS_CLOBBERED_BY_SYSCALL);			\
@@ -278,7 +283,7 @@
     register TYPEFY (arg2, _a2) asm ("rsi") = __arg2;			\
     register TYPEFY (arg1, _a1) asm ("rdi") = __arg1;			\
     asm volatile (							\
-    "syscall\n\t"							\
+    "OCCLUM_SYSCALL\n\t"						\
     : "=a" (resultvar)							\
     : "0" (number), "r" (_a1), "r" (_a2), "r" (_a3)			\
     : "memory", REGISTERS_CLOBBERED_BY_SYSCALL);			\
@@ -298,7 +303,7 @@
     register TYPEFY (arg2, _a2) asm ("rsi") = __arg2;			\
     register TYPEFY (arg1, _a1) asm ("rdi") = __arg1;			\
     asm volatile (							\
-    "syscall\n\t"							\
+    "OCCLUM_SYSCALL\n\t"						\
     : "=a" (resultvar)							\
     : "0" (number), "r" (_a1), "r" (_a2), "r" (_a3), "r" (_a4)		\
     : "memory", REGISTERS_CLOBBERED_BY_SYSCALL);			\
@@ -320,7 +325,7 @@
     register TYPEFY (arg2, _a2) asm ("rsi") = __arg2;			\
     register TYPEFY (arg1, _a1) asm ("rdi") = __arg1;			\
     asm volatile (							\
-    "syscall\n\t"							\
+    "OCCLUM_SYSCALL\n\t"						\
     : "=a" (resultvar)							\
     : "0" (number), "r" (_a1), "r" (_a2), "r" (_a3), "r" (_a4),		\
       "r" (_a5)								\
@@ -345,7 +350,7 @@
     register TYPEFY (arg2, _a2) asm ("rsi") = __arg2;			\
     register TYPEFY (arg1, _a1) asm ("rdi") = __arg1;			\
     asm volatile (							\
-    "syscall\n\t"							\
+    "OCCLUM_SYSCALL\n\t"						\
     : "=a" (resultvar)							\
     : "0" (number), "r" (_a1), "r" (_a2), "r" (_a3), "r" (_a4),		\
       "r" (_a5), "r" (_a6)						\

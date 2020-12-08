@@ -235,6 +235,8 @@ weak_alias (__get_nprocs, get_nprocs)
 int
 __get_nprocs_conf (void)
 {
+  /* Occlum Note: Do not support sysfs, call __get_nprocs instead */
+  return __get_nprocs();
   /* XXX Here will come a test for the new system call.  */
 
   /* Try to use the sysfs filesystem.  It has actual information about

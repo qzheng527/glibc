@@ -19,6 +19,9 @@
 #ifndef _ELF_H
 #define	_ELF_H 1
 
+#include "occlum_entry.h"
+
+
 /* Standard ELF types.  */
 
 #include <stdint.h>
@@ -1232,6 +1235,9 @@ typedef struct
 #define AT_L3_CACHEGEOMETRY	47
 
 #define AT_MINSIGSTKSZ		51 /* Stack needed for signal delivery  */
+
+/* Occlum note: Store the address of Occlum's syscall handler */
+#define AT_OCCLUM_ENTRY 48
 
 /* Note section contents.  Each entry in the note section begins with
    a header of a fixed form.  */

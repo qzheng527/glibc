@@ -43,7 +43,7 @@ ENTRY(__setcontext)
 	movl	$SIG_SETMASK, %edi
 	movl	$_NSIG8,%r10d
 	movl	$__NR_rt_sigprocmask, %eax
-	syscall
+	OCCLUM_SYSCALL
 	/* Pop the pointer into RDX. The choice is arbitrary, but
 	   leaving RDI and RSI available for use later can avoid
 	   shuffling values.  */

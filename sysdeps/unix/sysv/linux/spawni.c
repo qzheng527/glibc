@@ -423,6 +423,16 @@ __spawnix (pid_t * pid, const char *file,
   return ec;
 }
 
+static int
+__spawni_on_occlum (pid_t * pid, const char *file,
+		    const posix_spawn_file_actions_t * acts,
+		    const posix_spawnattr_t * attrp, char *const argv[],
+		    char *const envp[])
+{
+  int ret = syscall(__NR_spawn, pid, file, argv, envp, acts, attrp);
+  return ret;
+}
+
 /* Spawn a new process executing PATH with the attributes describes in *ATTRP.
    Before running the process perform the actions described in FILE-ACTIONS. */
 int
@@ -431,8 +441,14 @@ __spawni (pid_t * pid, const char *file,
 	  const posix_spawnattr_t * attrp, char *const argv[],
 	  char *const envp[], int xflags)
 {
+
+  if (IS_RUNNING_ON_OCCLUM){
+    /* Occlum note: Call syscall directly */
+    return __spawni_on_occlum(pid, file, acts, attrp, argv, envp);
+  }
+
   /* It uses __execvpex to avoid run ENOEXEC in non compatibility mode (it
-     will be handled by maybe_script_execute).  */
-  return __spawnix (pid, file, acts, attrp, argv, envp, xflags,
-		    xflags & SPAWN_XFLAGS_USE_PATH ? __execvpex :__execve);
+   will be handled by maybe_script_execute).  */
+  return __spawnix(pid, file, acts, attrp, argv, envp, xflags,
+                   xflags & SPAWN_XFLAGS_USE_PATH ? __execvpex : __execve);
 }

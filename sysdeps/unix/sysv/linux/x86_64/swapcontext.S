@@ -76,7 +76,7 @@ ENTRY(__swapcontext)
 	movl	$SIG_SETMASK, %edi
 	movl	$_NSIG8,%r10d
 	movl	$__NR_rt_sigprocmask, %eax
-	syscall
+	OCCLUM_SYSCALL
 	cmpq	$-4095, %rax		/* Check %rax for error.  */
 	jae	SYSCALL_ERROR_LABEL	/* Jump to error handler if error.  */
 

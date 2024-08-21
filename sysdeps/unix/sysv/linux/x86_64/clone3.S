@@ -40,6 +40,13 @@
 
         .text
 ENTRY (__clone3)
+	/* Occlum doesn't support clone3 */
+	movq __occlum_entry@GOTPCREL(%rip), %R11_LP
+	movq (%R11_LP), %R11_LP
+	cmpq $0, %R11_LP
+	movl	$-ENOSYS, %eax
+	jnz	SYSCALL_ERROR_LABEL
+
 	/* Sanity check arguments.  */
 	movl	$-EINVAL, %eax
 	test	%RDI_LP, %RDI_LP	/* No NULL cl_args pointer.  */

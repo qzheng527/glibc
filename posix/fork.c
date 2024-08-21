@@ -39,6 +39,11 @@ fresetlockfiles (void)
 pid_t
 __libc_fork (void)
 {
+  if (IS_RUNNING_ON_OCCLUM) {
+    /* Occlum note: Occlum does NOT support fork, use posix_spawn instead. */
+    errno = ENOSYS;
+    return -1;
+  }
   /* Determine if we are running multiple threads.  We skip some fork
      handlers in the single-thread case, to make fork safer to use in
      signal handlers.  Although POSIX has dropped async-signal-safe
